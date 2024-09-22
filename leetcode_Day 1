@@ -1,0 +1,339 @@
+14. Longest Common Prefix
+
+Write a function to find the longest common prefix string amongst an array of strings.
+
+If there is no common prefix, return an empty string "".
+
+ 
+
+Example 1:
+
+Input: strs = ["flower","flow","flight"]
+Output: "fl"
+Example 2:
+
+Input: strs = ["dog","racecar","car"]
+Output: ""
+Explanation: There is no common prefix among the input strings.
+ 
+
+Constraints:
+
+1 <= strs.length <= 200
+0 <= strs[i].length <= 200
+strs[i] consists of only lowercase English letters.
+
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        
+        string str = strs[0];
+        string prefix;
+        int breaker = 0;
+        int x = 0;
+        while(x != str.size()){
+                char element_of_str = str[x];
+                
+                int counter = 0;
+                for(int i = 0; i < strs.size(); i++){
+                    if(element_of_str ==  strs[i][x]){
+                        counter++;
+                    }
+                    else{
+                        breaker++;
+                        break;
+                    }
+                }
+                if(counter == strs.size() ){
+                        prefix += element_of_str;
+                }
+                x++;
+                if(breaker == 1){
+                    break;
+                }
+        }
+
+    return prefix;
+    }
+};
+
+#72. Edit Distance
+
+Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
+
+You have the following three operations permitted on a word:
+
+Insert a character
+Delete a character
+Replace a character
+ 
+
+Example 1:
+
+Input: word1 = "horse", word2 = "ros"
+Output: 3
+Explanation: 
+horse -> rorse (replace 'h' with 'r')
+rorse -> rose (remove 'r')
+rose -> ros (remove 'e')
+Example 2:
+
+Input: word1 = "intention", word2 = "execution"
+Output: 5
+Explanation: 
+intention -> inention (remove 't')
+inention -> enention (replace 'i' with 'e')
+enention -> exention (replace 'n' with 'x')
+exention -> exection (replace 'n' with 'c')
+exection -> execution (insert 'u')
+
+class Solution {
+public:
+
+    int solveRecursion(string &a,string &b ,int i,int j)
+    {
+        if(i== a.length())
+        {
+        return b.length()-j;
+        }
+
+        if(j==b.length())
+        {
+        return a.length()-i;
+        }
+        int ans=0;
+        if(a[i]==b[j])
+        {
+            return (a,b,i+1,j+1);
+        }
+        else {
+            int Insert=1+solveRecursion(a,b,i,j+1);
+            int Delete=1+solveRecursion(a,b,i+1,j);
+            int Replace=1+solveRecursion(a,b,i+1,j+1);
+            ans=min(Insert,min(Delete,Replace));
+        }
+        return ans;
+    }
+
+     int solveMemo(string &a,string &b ,int i,int j,vector<vector<int>>&dp)
+    {
+        if(i== a.length())
+        {
+        return b.length()-j;
+        }
+
+        if(j==b.length())
+        {
+        return a.length()-i;
+        }
+        if(dp[i][j]!=-1)
+        return dp[i][j];
+        int ans=0;
+        if(a[i]==b[j])
+        {
+            return (a,b,i+1,j+1);
+        }
+        else {
+            int Insert=1+solveMemo(a,b,i,j+1,dp);
+            int Delete=1+solveMemo(a,b,i+1,j,dp);
+            int Replace=1+solveMemo(a,b,i+1,j+1,dp);
+            ans=min(Insert,min(Delete,Replace));
+        }
+        return dp[i][j]=ans;
+    }
+
+
+   int solveTab(string a,string b )
+    {
+        vector<int>curr(b.length()+1,0);
+        vector<int>next(b.length()+1,0);
+
+        for(int j=0;j<b.length();j++)
+        {
+            next[j]=b.length()-j;
+        }
+        for(int i=a.length()-1;i>=0;i--)
+        {
+            for(int j=b.length()-1;j>=0;j--)
+            {
+                curr[b.length()]=a.length()-i;
+                int ans=0;
+                if(a[i]==b[j])
+                {
+                    ans=next[j+1];
+                }
+                else
+                {
+            int Insert=1+curr[j+1];
+            int Delete=1+next[j];
+            int Replace=1+next[j+1];
+            ans=min(Insert,min(Delete,Replace)); 
+                }
+                curr[j]=ans;
+            }
+            next=curr;
+        }
+        return next[0];
+    }
+    int minDistance(string word1, string word2)
+     {
+        //return solveRecursion(word1,word2,0,0);
+        //vector<vector<int>>dp(word1.length(),vector<int>(word2.length(),-1));
+        //return solveMemo(word1,word2,0,0,dp);
+        if(word1.length() == 0)
+        return word2.length();
+
+        if(word2.length() ==0)
+        return word1.length();
+        return solveTab(word1,word2);
+    }
+};
+#1832. Check if the Sentence Is Pangram
+Solved
+Easy
+Topics
+Companies
+Hint
+A pangram is a sentence where every letter of the English alphabet appears at least once.
+
+Given a string sentence containing only lowercase English letters, return true if sentence is a pangram, or false otherwise.
+
+ 
+
+Example 1:
+
+Input: sentence = "thequickbrownfoxjumpsoverthelazydog"
+Output: true
+Explanation: sentence contains at least one of every letter of the English alphabet.
+Example 2:
+
+Input: sentence = "leetcode"
+Output: false
+ 
+
+Constraints:
+
+1 <= sentence.length <= 1000
+sentence consists of lowercase English letters.
+
+class Solution {
+public:
+    bool checkIfPangram(string sentence) {
+        vector<int>arr(26,0);
+        int count=0;
+        for(char &ch:sentence)
+        {
+            int index = ch-'a';
+            if(arr[index]==0)
+            {
+                arr[index]++;
+                count++;
+            }
+        }
+        if(count==26)
+        return true;
+
+        return false;
+        
+    }
+};
+
+#1832. Check if the Sentence Is Pangram
+Solved
+Easy
+Topics
+Companies
+Hint
+A pangram is a sentence where every letter of the English alphabet appears at least once.
+
+Given a string sentence containing only lowercase English letters, return true if sentence is a pangram, or false otherwise.
+
+ 
+
+Example 1:
+
+Input: sentence = "thequickbrownfoxjumpsoverthelazydog"
+Output: true
+Explanation: sentence contains at least one of every letter of the English alphabet.
+Example 2:
+
+Input: sentence = "leetcode"
+Output: false
+ 
+
+Constraints:
+
+1 <= sentence.length <= 1000
+sentence consists of lowercase English letters.
+
+class Solution {
+public:
+    bool checkIfPangram(string sentence) {
+        vector<int>arr(26,0);
+        int count=0;
+        for(char &ch:sentence)
+        {
+            int index = ch-'a';
+            if(arr[index]==0)
+            {
+                arr[index]++;
+                count++;
+            }
+        }
+        if(count==26)
+        return true;
+
+        return false;
+        
+    }
+};
+
+
+#3084. Count Substrings Starting and Ending with Given Character
+
+You are given a string s and a character c. Return the total number of 
+substrings of s that start and end with c.
+
+ 
+
+Example 1:
+
+Input: s = "abada", c = "a"
+
+Output: 6
+
+Explanation: Substrings starting and ending with "a" are: "abada", "abada", "abada", "abada", "abada", "abada".
+
+Example 2:
+
+Input: s = "zzz", c = "z"
+
+Output: 6
+
+Explanation: There are a total of 6 substrings in s and all start and end with "z".
+
+ 
+
+Constraints:
+
+1 <= s.length <= 105
+s and c consist only of lowercase English letters.
+
+class Solution {
+public:
+    long long countSubstrings(string s, char c) {
+        long long count=0;
+        long long subString=0;
+
+        for(char ch:s)
+        {
+            if(ch == c)
+            {
+                subString +=(1+ count) ;
+                count++;
+            }
+        }
+        return subString;
+        
+    }
+};

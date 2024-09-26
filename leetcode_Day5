@@ -1,0 +1,192 @@
+290. Word Pattern
+Given a pattern and a string s, find if s follows the same pattern.
+
+Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty word in s. Specifically:
+
+Each letter in pattern maps to exactly one unique word in s.
+Each unique word in s maps to exactly one letter in pattern.
+No two letters map to the same word, and no two words map to the same letter.
+ 
+
+Example 1:
+
+Input: pattern = "abba", s = "dog cat cat dog"
+
+Output: true
+
+Explanation:
+
+The bijection can be established as:
+
+'a' maps to "dog".
+'b' maps to "cat".
+Example 2:
+
+Input: pattern = "abba", s = "dog cat cat fish"
+
+Output: false
+
+Example 3:
+
+Input: pattern = "aaaa", s = "dog cat cat dog"
+
+Output: false
+
+ 
+
+Constraints:
+
+1 <= pattern.length <= 300
+pattern contains only lower-case English letters.
+1 <= s.length <= 3000
+s contains only lowercase English letters and spaces ' '.
+s does not contain any leading or trailing spaces.
+All the words in s are separated by a single space.
+
+//Intiution
+
+class Solution {
+public:
+    bool wordPattern(string pattern, string s) {
+        map<char,string>mpp;
+        map<string,char>m;
+        stringstream ss(s);
+        string word;
+        vector<string>v;
+        while(ss>>word){
+            v.push_back(word);
+        }
+        if(pattern.size()!=v.size()) return false;
+        vector<bool>check(27,true);
+        for(int i=0;i<pattern.size();i++){
+            if(check[pattern[i]-'a']==true){
+                check[pattern[i]-'a']=false;
+                mpp[pattern[i]]=v[i];
+                m[v[i]]=pattern[i];
+            }
+            else if(check[pattern[i]-'a']==false){
+                if(mpp[pattern[i]]==v[i] && m[v[i]]==pattern[i]){
+                    continue;
+                }else return false;
+            }
+        }
+        for(int i=0;i<pattern.size();i++){
+            if(v[i]!=mpp[pattern[i]] || m[v[i]]!=pattern[i]){
+                    return false;
+            }
+        }
+        return true;
+    }
+};
+
+//557. Reverse Words in a String III
+
+Companies
+Given a string s, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.
+
+Example 1:
+
+Input: s = "Let's take LeetCode contest"
+Output: "s'teL ekat edoCteeL tsetnoc"
+Example 2:
+
+Input: s = "Mr Ding"
+Output: "rM gniD"
+ 
+
+Constraints:
+
+1 <= s.length <= 5 * 104
+s contains printable ASCII characters.
+s does not contain any leading or trailing spaces.
+There is at least one word in s.
+All the words in s are separated by a single space.
+
+class Solution {
+public:
+    string reverseWords(string &s) {
+        stringstream ss(s);
+
+        string result = "";
+        string token = "";
+
+        while(ss >> token) {
+            reverse(begin(token), end(token));
+            result += token + " ";
+        }
+
+        return result.substr(0, result.length()-1);
+    }
+};
+
+//859. Buddy Strings
+
+Given two strings s and goal, return true if you can swap two letters in s so the result is equal to goal, otherwise, return false.
+
+Swapping letters is defined as taking two indices i and j (0-indexed) such that i != j and swapping the characters at s[i] and s[j].
+
+For example, swapping at indices 0 and 2 in "abcd" results in "cbad".
+ 
+
+Example 1:
+
+Input: s = "ab", goal = "ba"
+Output: true
+Explanation: You can swap s[0] = 'a' and s[1] = 'b' to get "ba", which is equal to goal.
+Example 2:
+
+Input: s = "ab", goal = "ab"
+Output: false
+Explanation: The only letters you can swap are s[0] = 'a' and s[1] = 'b', which results in "ba" != goal.
+Example 3:
+
+Input: s = "aa", goal = "aa"
+Output: true
+Explanation: You can swap s[0] = 'a' and s[1] = 'a' to get "aa", which is equal to goal.
+ 
+
+Constraints:
+
+1 <= s.length, goal.length <= 2 * 104
+s and goal consist of lowercase letters.
+
+class Solution {
+public:
+   bool checkFreq(string s)
+   {
+    int arr[26] = {0};
+    for(char &ch:s)
+    {
+        arr[ch -'a']++;
+        if(arr [ch-'a'] >1)
+        return true;
+
+    }
+    return false;
+   }
+     bool buddyStrings(string s, string goal) {
+        if(s.length() != goal.length())
+            return false;
+        
+        if(s == goal) {
+            return checkFreq(s);
+        }
+        
+        vector<int>indices;
+        
+        for(int i=0;i<s.length();i++) {
+            if(s[i] != goal[i]) {
+                indices.push_back(i);
+            }
+        }
+        
+        if(indices.size()!= 2)
+            return false;
+        
+        int first  =indices[0];
+        int second =indices[1];
+        
+        swap(s[first], s[second]);
+        return s==goal;
+    }
+};
